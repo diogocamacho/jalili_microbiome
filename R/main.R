@@ -11,8 +11,8 @@ message("---- Libraries and functions ----")
 source("./R/functions_libraries.R")
 
 message("---- Load data ----")
-load("./data/unfiltered_data_2018-07-02.RData")
-load("./data/tidy_filtered_2018-07-02.RData")
+load("./data/2018-07-02_unfiltered_data.RData")
+load("./data/2018-07-02_tidy_filtered.RData")
 
 OTU <- untidy_unfil[[1]]
 full_OTU <- untidy_unfil[[2]]

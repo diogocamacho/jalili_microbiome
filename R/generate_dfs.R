@@ -75,7 +75,6 @@ df3 <- data_frame(sample = c(rep("Aerobic", length(Reduce(intersect, list(y1, z2
                              df2$counts[intersect(y3, z2)], 
                              as.vector(human_summarized$counts[z1, x2])))
 
-# rm(x1,x2,y1,y2,y3)
 
 # normalize to counts in human stool
 ubac <- unique(df3$genus)
