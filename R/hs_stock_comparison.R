@@ -46,29 +46,49 @@ for (i in seq(1, length(ubac))) {
   a2 <- df5$counts[df5$genus == ubac[i] & df5$sample_group != "stock_1000"]
   if (a1 != 0) {
     xx1 <-  a2 / a1 
+    
+    bac_plots_norm1000[[i]] <- df5 %>% 
+      dplyr::filter(., genus == ubac[i], sample_group != "stock_1000") %>%
+      tibble::add_column(., norm_stock1000 = xx1) %>%
+      dplyr::filter(., genus == ubac[i], sample_group != "stock_10", sample_group != "Hmb11") %>%
+      # dplyr::filter(., sample_group != "Hmb11") %>%
+      ggplot() +
+      geom_boxplot(aes(x = day, y = norm_stock1000, fill = sample_group)) + 
+      geom_point(aes(x = day, y = norm_stock1000, fill = sample_group), pch = 21, size = 2, color = "black", position = position_dodge(width = 0.75)) +
+      scale_fill_manual(values = c("#006699", "#00CCFF", "#CCCCCC"),
+                        breaks = c("aerobic", "anaerobic", "Hmb11"),
+                        labels = c("Aerobic", "Anaerobic", "Human stock"),
+                        name = "Condition") +
+      geom_hline(yintercept = 1, lty = 2, color = "red", lwd = 1) +
+      labs(x = "Day", y = "GoC / stock 1:1000", title = ubac[i]) + 
+      theme_bw() + 
+      theme(axis.title = element_text(size = 20, face = "bold", color = "black"),
+            axis.text = element_text(size = 12, color = "black"),
+            panel.grid = element_blank(), title = element_text(size = 20, face = "bold"))
+    
   } else {
     xx1 <-  a2
+    
+    bac_plots_norm1000[[i]] <- df5 %>% 
+      dplyr::filter(., genus == ubac[i], sample_group != "stock_1000") %>%
+      tibble::add_column(., norm_stock1000 = xx1) %>%
+      dplyr::filter(., genus == ubac[i], sample_group != "stock_10", sample_group != "Hmb11") %>%
+      # dplyr::filter(., sample_group != "Hmb11") %>%
+      ggplot() +
+      geom_boxplot(aes(x = day, y = norm_stock1000, fill = sample_group)) + 
+      geom_point(aes(x = day, y = norm_stock1000, fill = sample_group), pch = 21, size = 2, color = "black", position = position_dodge(width = 0.75)) +
+      scale_fill_manual(values = c("#006699", "#00CCFF", "#CCCCCC"),
+                        breaks = c("aerobic", "anaerobic", "Hmb11"),
+                        labels = c("Aerobic", "Anaerobic", "Human stock"),
+                        name = "Condition") +
+      geom_hline(yintercept = 0, lty = 2, color = "red", lwd = 1) +
+      labs(x = "Day", y = "GoC / stock 1:1000", title = ubac[i]) + 
+      theme_bw() + 
+      theme(axis.title = element_text(size = 20, face = "bold", color = "black"),
+            axis.text = element_text(size = 12, color = "black"),
+            panel.grid = element_blank(), title = element_text(size = 20, face = "bold"))
+    
   }
-  
-  
-  bac_plots_norm1000[[i]] <- df5 %>% 
-    dplyr::filter(., genus == ubac[i], sample_group != "stock_1000") %>%
-    tibble::add_column(., norm_stock1000 = xx1) %>%
-    dplyr::filter(., genus == ubac[i], sample_group != "stock_10", sample_group != "Hmb11") %>%
-    # dplyr::filter(., sample_group != "Hmb11") %>%
-    ggplot() +
-    geom_boxplot(aes(x = day, y = norm_stock1000, fill = sample_group)) + 
-    geom_point(aes(x = day, y = norm_stock1000, fill = sample_group), pch = 21, size = 2, color = "black", position = position_dodge(width = 0.75)) +
-    scale_fill_manual(values = c("#006699", "#00CCFF", "#CCCCCC"),
-                      breaks = c("aerobic", "anaerobic", "Hmb11"),
-                      labels = c("Aerobic", "Anaerobic", "Human stock"),
-                      name = "Condition") +
-    geom_hline(yintercept = 1, lty = 2, color = "red", lwd = 1) +
-    labs(x = "Day", y = "Relative abundance to stock control", title = ubac[i]) + 
-    theme_bw() + 
-    theme(axis.title = element_text(size = 20, face = "bold", color = "black"),
-          axis.text = element_text(size = 12, color = "black"),
-          panel.grid = element_blank(), title = element_text(size = 20, face = "bold"))
 }
 
 # normalize to stock 1:10
@@ -79,27 +99,47 @@ for (i in seq(1, length(ubac))) {
   a2 <- df5$counts[df5$genus == ubac[i] & df5$sample_group != "stock_10"]
   if (a1 != 0) {
     xx1 <-  a2 / a1 
+    
+    bac_plots_norm10[[i]] <- df5 %>% 
+      dplyr::filter(., genus == ubac[i], sample_group != "stock_10") %>%
+      tibble::add_column(., norm_stock1000 = xx1) %>%
+      dplyr::filter(., genus == ubac[i], sample_group != "stock_1000", sample_group != "Hmb11") %>%
+      # dplyr::filter(., sample_group != "Hmb11") %>%
+      ggplot() +
+      geom_boxplot(aes(x = day, y = norm_stock1000, fill = sample_group)) + 
+      geom_point(aes(x = day, y = norm_stock1000, fill = sample_group), pch = 21, size = 2, color = "black", position = position_dodge(width = 0.75)) +
+      scale_fill_manual(values = c("#006699", "#00CCFF", "#CCCCCC"),
+                        breaks = c("aerobic", "anaerobic", "Hmb11"),
+                        labels = c("Aerobic", "Anaerobic", "Human stock"),
+                        name = "Condition") +
+      geom_hline(yintercept = 1, lty = 2, color = "red", lwd = 1) +
+      labs(x = "Day", y = "GoC / stock 1:10", title = ubac[i]) + 
+      theme_bw() + 
+      theme(axis.title = element_text(size = 20, face = "bold", color = "black"),
+            axis.text = element_text(size = 12, color = "black"),
+            panel.grid = element_blank(), title = element_text(size = 20, face = "bold"))
+    
   } else {
     xx1 <-  a2
+    
+    bac_plots_norm10[[i]] <- df5 %>% 
+      dplyr::filter(., genus == ubac[i], sample_group != "stock_10") %>%
+      tibble::add_column(., norm_stock1000 = xx1) %>%
+      dplyr::filter(., genus == ubac[i], sample_group != "stock_1000", sample_group != "Hmb11") %>%
+      # dplyr::filter(., sample_group != "Hmb11") %>%
+      ggplot() +
+      geom_boxplot(aes(x = day, y = norm_stock1000, fill = sample_group)) + 
+      geom_point(aes(x = day, y = norm_stock1000, fill = sample_group), pch = 21, size = 2, color = "black", position = position_dodge(width = 0.75)) +
+      scale_fill_manual(values = c("#006699", "#00CCFF", "#CCCCCC"),
+                        breaks = c("aerobic", "anaerobic", "Hmb11"),
+                        labels = c("Aerobic", "Anaerobic", "Human stock"),
+                        name = "Condition") +
+      geom_hline(yintercept = 0, lty = 2, color = "red", lwd = 1) +
+      labs(x = "Day", y = "GoC / stock 1:10", title = ubac[i]) + 
+      theme_bw() + 
+      theme(axis.title = element_text(size = 20, face = "bold", color = "black"),
+            axis.text = element_text(size = 12, color = "black"),
+            panel.grid = element_blank(), title = element_text(size = 20, face = "bold"))
+    
   }
-  
-  
-  bac_plots_norm10[[i]] <- df5 %>% 
-    dplyr::filter(., genus == ubac[i], sample_group != "stock_10") %>%
-    tibble::add_column(., norm_stock1000 = xx1) %>%
-    dplyr::filter(., genus == ubac[i], sample_group != "stock_1000", sample_group != "Hmb11") %>%
-    # dplyr::filter(., sample_group != "Hmb11") %>%
-    ggplot() +
-    geom_boxplot(aes(x = day, y = norm_stock1000, fill = sample_group)) + 
-    geom_point(aes(x = day, y = norm_stock1000, fill = sample_group), pch = 21, size = 2, color = "black", position = position_dodge(width = 0.75)) +
-    scale_fill_manual(values = c("#006699", "#00CCFF", "#CCCCCC"),
-                      breaks = c("aerobic", "anaerobic", "Hmb11"),
-                      labels = c("Aerobic", "Anaerobic", "Human stock"),
-                      name = "Condition") +
-    geom_hline(yintercept = 1, lty = 2, color = "red", lwd = 1) +
-    labs(x = "Day", y = "Relative abundance to stock control", title = ubac[i]) + 
-    theme_bw() + 
-    theme(axis.title = element_text(size = 20, face = "bold", color = "black"),
-          axis.text = element_text(size = 12, color = "black"),
-          panel.grid = element_blank(), title = element_text(size = 20, face = "bold"))
 }
