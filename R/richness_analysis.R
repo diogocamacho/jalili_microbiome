@@ -10,6 +10,42 @@ richness_data <- data_frame(metric = as.vector(sapply(colnames(richness_data), r
                             day = as.vector(t(sapply(sample_data(full_OTU)[, 5], rep, ncol(richness_data)))),
                             cond_day = as.vector(t(sapply(sample_data(full_OTU)[, 8], rep, ncol(richness_data)))))
 
+
+# show what happens compared to the starter set
+x1 <- data_frame(group = c("starter",
+                           "aerobic_1", "aerobic_2", "aerobic_3",
+                           "anaerobic_1", "anaerobic_2", "anaerobic_3"),
+                 metric = rep("Observed", 7),
+                 richness_mean = c(richness_data %>% dplyr::filter(., sample_name == "Wyss.Hmb11", metric == "Observed") %>% dplyr::select(., alpha_diversity) %>% as.matrix %>% as.vector,
+                                   richness_data %>% dplyr::filter(., condition == "aerobic", metric == "Observed", day == 1) %>% dplyr::select(., alpha_diversity) %>% as.matrix %>% mean,
+                                   richness_data %>% dplyr::filter(., condition == "aerobic", metric == "Observed", day == 2) %>% dplyr::select(., alpha_diversity) %>% as.matrix %>% mean,
+                                   richness_data %>% dplyr::filter(., condition == "aerobic", metric == "Observed", day == 3) %>% dplyr::select(., alpha_diversity) %>% as.matrix %>% mean,
+                                   richness_data %>% dplyr::filter(., condition == "anaerobic", metric == "Observed", day == 1) %>% dplyr::select(., alpha_diversity) %>% as.matrix %>% mean,
+                                   richness_data %>% dplyr::filter(., condition == "anaerobic", metric == "Observed", day == 2) %>% dplyr::select(., alpha_diversity) %>% as.matrix %>% mean,
+                                   richness_data %>% dplyr::filter(., condition == "anaerobic", metric == "Observed", day == 3) %>% dplyr::select(., alpha_diversity) %>% as.matrix %>% mean),
+                 richness_sd = c(0,
+                                 richness_data %>% dplyr::filter(., condition == "aerobic", metric == "Observed", day == 1) %>% dplyr::select(., alpha_diversity) %>% as.matrix %>% sd,
+                                 richness_data %>% dplyr::filter(., condition == "aerobic", metric == "Observed", day == 2) %>% dplyr::select(., alpha_diversity) %>% as.matrix %>% sd,
+                                 richness_data %>% dplyr::filter(., condition == "aerobic", metric == "Observed", day == 3) %>% dplyr::select(., alpha_diversity) %>% as.matrix %>% sd,
+                                 richness_data %>% dplyr::filter(., condition == "anaerobic", metric == "Observed", day == 1) %>% dplyr::select(., alpha_diversity) %>% as.matrix %>% sd,
+                                 richness_data %>% dplyr::filter(., condition == "anaerobic", metric == "Observed", day == 2) %>% dplyr::select(., alpha_diversity) %>% as.matrix %>% sd,
+                                 richness_data %>% dplyr::filter(., condition == "anaerobic", metric == "Observed", day == 3) %>% dplyr::select(., alpha_diversity) %>% as.matrix %>% sd))
+
+x1 %>% 
+  ggplot() + 
+  geom_bar(aes(x = group, y = richness_mean, fill = group), stat = "identity", color = "black") + 
+  scale_fill_manual(values = c(rep("#006699",3), rep("#00CCFF", 3), "#666666"),
+                    breaks = c(),
+                    labels = NULL,
+                    name = NULL) + 
+  labs(x = NULL, y = "Average richness") + 
+  theme_bw() + 
+  theme(axis.text.x = element_text(size = 12, color = "black", angle = 90, hjust = 1, vjust = 0.5),
+        axis.text.y = element_text(size = 12, color = "black"),
+        axis.title = element_text(size = 20, face = "bold", color = "black"))
+
+
+
 # add human data
 rich_human <- phyloseq::estimate_richness(HMPv35)
 stid <- sample_data(HMPv35)[which(sample_data(HMPv35)[, 6] == "Stool"), 1]
