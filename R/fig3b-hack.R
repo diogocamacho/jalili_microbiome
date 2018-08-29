@@ -16,45 +16,46 @@ sample_metadata <- data.frame(sample_names=colnames(otu_table(aOTU)),
 rownames(sample_metadata) <- sample_metadata$sample_names
 sample_data(aOTU) <- sample_metadata
 
+new_taxa <- rename_taxa(phyloseq_otu_object = aOTU)
+tax_table(aOTU) <- new_taxa
+rm(new_taxa)
+
+
+# tidy otu table
 xx <- tidy_phyloseq(phyloseq_obj = aOTU)
 
-a1 <- rownames(tidy_full$otu_table)
-a2 <- rownames(xx$otu_table)
-xx2 <- xx$otu_table[match(a1, a2), ]
-xx2 <- xx2[, which(xx$samples$sample_id == "Hmb1")]
+# M2 <- tidy_correct_counts(tidy_phylo = xx, control_sample_id = 25)
+summ_full_2 <- tidy_taxa(tidy_phylo = xx,summary_level = "genus")
+relative_full_2 <- relative_abundances(summary_matrix = summ_full_2$counts)
 
-tidy_full2 <- tidy_full
-tidy_full2$otu_table <- tidy_full2$otu_table[, -25]
-tidy_full2$samples <- tidy_full2$samples[-25, ]
+# hmb1 sample
+id <- 8
 
-a3 <- as_data_frame(tidy_full2$samples)
-tidy_full2$samples <- as_data_frame(rbind(as.matrix(a3),
-      c("Wyss.Hmb1", "Hmb1", "Human microbiome stock", NA, NA, NA, NA, NA)))
+count_mat <- cbind(summ_full$counts, summ_full_2$counts[match(summ_full$bacteria, summ_full_2$bacteria), id])
+rel_mat <- apply(count_mat, 2, function(y) y/sum(y))
+s <- rbind(as.matrix(M$samples), c("Hmb1", "Hmb1", "Undiluted stock", NA, NA, NA, NA, NA))
+s[25, 4] <- "Hmb11"
+s[26, 4] <- "Hmb1"
+s[25, 5] <- "Hmb11"
+s[26, 5] <- "Hmb1"
+s[25, 6] <- "Hmb11"
+s[26, 6] <- "Hmb1"
+
+s <- as.data.frame(s)
 
 
-M <- tidy_correct_counts(tidy_phylo = tidy_full2,control_sample_id = 25)
-summ_full <- tidy_taxa(tidy_phylo = M,summary_level = "genus")
-relative_full <- relative_abundances(summary_matrix = summ_full$counts)
-
-df4 <- data_frame(sample_name = as.vector(sapply(M$samples$filename, rep, nrow(summ_full$counts))),
-                  sample_group = as.vector(sapply(M$samples$condition, rep, nrow(summ_full$counts))),
-                  day=as.vector(sapply(M$samples$day,rep,nrow(summ_full$counts))),
-                  replicate=as.vector(sapply(M$samples$replicate,rep,nrow(summ_full$counts))),
-                  genus=rep(summ_full$bacteria,ncol(summ_full$counts)),
-                  counts=as.vector(summ_full$counts),
-                  relative_abundance=as.vector(relative_full))#,
-# condition=as.vector(sapply(M$samples$condition,rep,nrow(summ_full$counts))),
-# plot_var=paste(condition,"-- day",day,"-- replicate",replicate))
-df4$replicate <- as.numeric(df4$replicate)
-
-df4$sample_name[is.na(df4$sample_name)] <- "Hmb1"
-df4$sample_group[is.na(df4$sample_group)] <- "Hmb1"
-df4$day[is.na(df4$day)] <- "Hmb1"
+df4 <- data_frame(sample_name = as.vector(sapply(s$filename, rep, nrow(count_mat))),
+                  sample_group = as.vector(sapply(s$condition, rep, nrow(count_mat))),
+                  day = as.vector(sapply(s$day, rep, nrow(count_mat))),
+                  replicate = as.vector(sapply(s$replicate, rep, nrow(count_mat))),
+                  genus = rep(summ_full$bacteria, ncol(count_mat)),
+                  counts = as.vector(count_mat),
+                  relative_abundance = as.vector(rel_mat))
 
 
 df4 %>%
-  # tibble::add_column(., s_id = factor(df2$sample_group, levels = c("Hmb11", "anaerobic", "aerobic"))) %>% 
-  tibble::add_column(., p_id = gsub("Hmb1 \\w* \\(replicate NA\\)", "Hmb1", gsub(" )", ")", paste(df4$sample_group, df4$day, "(replicate", df4$replicate, ")")))) %>%
+  tibble::add_column(., p_id = gsub("Hmb11 \\w* \\(replicate NA\\)", "Hmb11", gsub("Hmb1 \\w* \\(replicate NA\\)", "Hmb1", gsub(" )", ")", paste(df4$sample_group, df4$day, "(replicate", df4$replicate, ")"))))) %>%
+  # tibble::add_column(., p_id = gsub("Hmb11 \\w* \\(replicate NA\\)", "Hmb11", gsub(" )", ")", paste(df4$sample_group, df4$day, "(replicate", df4$replicate, ")")))) %>%
   ggplot() + 
   geom_bar(aes(x = p_id, y = relative_abundance, fill = genus), stat = "identity", color = "black") + 
   scale_fill_manual(breaks = c("Unknown", "Sutterella", "Bilophila", "Akkermansia", "Blautia",
